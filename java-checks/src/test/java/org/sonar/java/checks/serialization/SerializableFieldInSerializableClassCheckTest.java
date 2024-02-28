@@ -30,7 +30,7 @@ class SerializableFieldInSerializableClassCheckTest {
   @Test
   void test() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheckSample.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
       .verifyIssues();
     CheckVerifier.newVerifier()
@@ -42,7 +42,7 @@ class SerializableFieldInSerializableClassCheckTest {
   @Test
   void test_without_semantic() {
     CheckVerifier.newVerifier()
-      .onFile(mainCodeSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheck.java"))
+      .onFile(mainCodeSourcesPath("checks/serialization/SerializableFieldInSerializableClassCheckSample.java"))
       .withCheck(new SerializableFieldInSerializableClassCheck())
       .withoutSemantic()
       .verifyIssues();
