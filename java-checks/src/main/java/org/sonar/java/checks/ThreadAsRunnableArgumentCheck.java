@@ -108,11 +108,11 @@ public class ThreadAsRunnableArgumentCheck extends BaseTreeVisitor implements Ja
   @Override
   public void visitNewArray(NewArrayTree tree) {
     super.visitNewArray(tree);
-    var lhsType = tree.type().symbolType();
-    if (!lhsType.is(RUNNABLE_TYPE)) {
+    var lhsType = tree.type();
+    if (lhsType == null || !lhsType.symbolType().is(RUNNABLE_TYPE)) {
       return;
     }
-    tree.initializers().forEach(rhsValue -> checkTypeCoercion(lhsType, rhsValue));
+    tree.initializers().forEach(rhsValue -> checkTypeCoercion(lhsType.symbolType(), rhsValue));
   }
 
   @Override
@@ -123,7 +123,8 @@ public class ThreadAsRunnableArgumentCheck extends BaseTreeVisitor implements Ja
       return;
     }
 
-    Tree enclosing = Objects.requireNonNull(ExpressionUtils.getEnclosingElementAnyType(tree, Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION));
+    Tree enclosing = Objects.requireNonNull(ExpressionUtils.getEnclosingElementAnyType(tree, Tree.Kind.METHOD,
+      Tree.Kind.LAMBDA_EXPRESSION));
     var lhsType = enclosing instanceof LambdaExpressionTree lambda ?
       lambda.symbol().returnType().type() : ((MethodTree) enclosing).returnType().symbolType();
     checkTypeCoercion(lhsType, expression);
@@ -132,7 +133,10 @@ public class ThreadAsRunnableArgumentCheck extends BaseTreeVisitor implements Ja
   @Override
   public void visitYieldStatement(YieldStatementTree tree) {
     super.visitYieldStatement(tree);
-    Tree enclosing = Objects.requireNonNull(ExpressionUtils.getEnclosingElementAnyType(tree, Tree.Kind.SWITCH_EXPRESSION));
+    Tree enclosing = ExpressionUtils.getEnclosingElementAnyType(tree, Tree.Kind.SWITCH_EXPRESSION, Tree.Kind.SWITCH_STATEMENT);
+    if (enclosing.is(Tree.Kind.SWITCH_STATEMENT)) {
+      return;
+    }
     var lhsType = ((ExpressionTree) enclosing).symbolType();
     checkTypeCoercion(lhsType, tree.expression());
   }

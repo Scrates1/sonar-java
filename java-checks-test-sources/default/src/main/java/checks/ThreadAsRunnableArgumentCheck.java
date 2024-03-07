@@ -231,4 +231,16 @@ class ThreadAsRunnableArgumentCheck {
   private void arraySubtypeAssign(MyThread[] mts) {
     Runnable[] rs = mts; // Noncompliant
   }
+
+  private void arrayInstantiationWithNulltype() {
+    String[] words = { "abc" };
+  }
+
+  private void switchWithYieldNulltype(int code) {
+    switch(code) {
+      default -> voidFun();
+    };
+  }
+
+  private void voidFun() {}
 }
